@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>料理の献立提案チャットボット</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-control {
+            margin-bottom: 20px;
+        }
+        .form-control label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-control input[type="text"], .form-control input[type="number"], .form-control select {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .chat-box {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: scroll;
+            margin-bottom: 20px;
+        }
+        .chat-input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .chat-button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .chat-button:disabled {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>料理の献立提案チャットボット</h2>
+        <form id="infoForm">
+            <div class="form-control">
+                <label for="religion">宗教:</label>
+                <input type="text" id="religion" name="宗教" />
+            </div>
+            <div class="form-control">
+                <label for="allergies">アレルギー:</label>
+                <input type="text" id="allergies" name="アレルギー" />
+            </div>
+            <div class="form-control">
+                <label for="ingredients">使用してほしい食材:</label>
+                <input type="text" id="ingredients" name="使用してほしい食材" />
+            </div>
+            <div class="form-control">
+                <label for="age">年齢:</label>
+                <input type="number" id="age" name="年齢" />
+            </div>
+            <div class="form-control">
+                <label for="number">人数:</label>
+                <input type="number" id="number" name="人数" />
+            </div>
+            <div class="form-control">
+                <label for="gender">性別:</label>
+                <input type="text" id="gender" name="性別" />
+            </div>
+            <div class="form-control">
+                <label for="genre">料理のジャンル:</label>
+                <input type="text" id="genre" name="料理のジャンル" />
+            </div>
+            <div class="form-control">
+                <label for="time">食事をする時間帯:</label>
+                <input type="text" id="time" name="食事をする時間帯" />
+            </div>
+            <div class="form-control">
+                <label for="nationality">国籍:</label>
+                <input type="text" id="nationality" name="国籍" />
+            </div>
+            <button type="button" class="chat-button" id="submitInfoButton" onclick="submitInfo()">送信</button>
+        </form>
+        <div id="chatBox" class="chat-box"></div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const submitInfoButton = document.getElementById('submitInfoButton');
+
+        function submitInfo() {
+            const form = document.getElementById('infoForm');
+            const formData = new FormData(form);
+
+            let infoMessage = "以下の情報を元に料理の献立と調理方法を提案してください:\n";
+            formData.forEach((value, key) => {
+                infoMessage += `${key}: ${value}\n`;
+            });
+
+            appendMessage('あなた', infoMessage);
+            copyToClipboard(infoMessage);
+            openChatGPT();
+
+            // 一定期間ボタンを無効にする
+            submitInfoButton.disabled = true;
+            setTimeout(() => {
+                submitInfoButton.disabled = false;
+            }, 45000); // 45秒間ボタンを無効にする
+        }
+
+        function appendMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${message.replace(/\n/g, '<br>')}`;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        function openChatGPT() {
+            const chatUrl = 'https://chat.openai.com/chat';
+            window.open(chatUrl, '_blank');
+            alert("生成されたプロンプトがクリップボードにコピーされました。ChatGPTの入力欄に貼り付けてください。");
+        }
+    </script>
+</body>
+</html>
